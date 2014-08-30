@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script type="text/javascript" src="jquery.js"></script>
+    <script type="text/javascript" src="cycle2.js"></script>
+    <script type="text/javascript" src="fullscreen.js"></script>
+    <script>
+    var alphabet = new RegExp(/^[A-z]+$/)
+
+    $(window).resize(function() {
+      sizeImages();
+    });
+
+    $( document ).ready(function(){
+      //TODO: store their original sizes so we can maximize them later, right now they only shrink
+      sizeImages();
+    });
+
+    $(document).bind("fullscreenchange", function(){
+      sizeImages();
+      console.log("Full screen")
+      console.log($(window).width());
+      console.log($(window).height());
+    });
+
+    function sizeImages(){
+      var viewportWidth = $(window).width();
+      var viewportHeight = $(window).height();
+      $('img').each(function(){
+        img = this;
+        var aspectRatio = img.width/img.height;
+        // w/h
+        // w/h * h = w
+        // w/h 
+        //If too tall
+        if(img.height > viewportHeight){
+          img.height = viewportHeight - 5;
+          img.width = aspectRatio * img.height;
+        }
+        //If still too wide
+        if(img.width > viewportWidth){
+          img.width = viewportWidth - 5;
+          img.height = img.width / aspectRatio;
+        }
+      });
+    }
+
+    $( document ).keydown(function(event) {
+        var char = String.fromCharCode(event.which);
+        if(alphabet.test(char)){
+          $("#slideshow").toggleFullScreen();
+        }
+    });
+    </script>
+  </head>
+  <body>
+    <div id="slideshow" > <!--class="cycle-slideshow"-->
+        <img src="1.jpg">
+        <img src="2.jpg">
+        <img src="3.jpg">
+        <img src="4.jpg">
+    </div>
+  </body>
+</html>
+
+
+<!--
+http://stackoverflow.com/questions/7836204/chrome-fullscreen-api
+"The API only works during user interaction, so it cannot be used maliciously."
+Also so that it mysteriously fails if you try and do it, say, on pageload.
+-->
