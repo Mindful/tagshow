@@ -4,7 +4,6 @@
     <script type="text/javascript" src="jquery.js"></script>
     <script type="text/javascript" src="cycle2.js"></script>
     <script type="text/javascript" src="fullscreen.js"></script>
-    <script type="test/javascript" src="cycle2.center.js"></script>
     <script>
     var alphabet = new RegExp(/^[A-z]+$/)
 
@@ -15,11 +14,11 @@
         img.data('maxwidth', img.width() );
       });
       $("#slideshow").cycle();
-      sizeImages();
+      //sizeImages();
     });
 
     $(document).bind("fullscreenchange", function(){
-      setTimeout(function(){sizeImages();}, 250); //Have to wait, this event fires with the old viewport values
+      //setTimeout(function(){sizeImages();}, 250); //Have to wait, this event fires with the old viewport values
     });
 
     function sizeImages(){
@@ -28,8 +27,8 @@
       var viewportHeight = $(window).height();
       $('img').each(function(){
         var img = $(this);
-        var height = img.data('maxheight'); //This somehow prevents a weird bug where images
-        var width = img.data('maxwidth'); //move down and right in fullscreen slideshows
+        var height = img.data('maxheight');
+        var width = img.data('maxwidth');
         var aspectRatio = width/height;
         img.height(Math.min(height, viewportHeight));
         img.width(aspectRatio * img.height());
@@ -52,11 +51,12 @@
     });
     </script>
     <style>
-    #slideshow { width: 100%;  height:100%;}
+    #slideshow { width: 100%;} div {background-color: black;} body {background-color: black;}
+    img {width:100%; height:100%;}
     </style>
   </head>
-  <body style="background-color:black;">
-    <div id="slideshow" data-cycle-auto-height=false style="background-color:black;"> 
+  <body>
+    <div id="slideshow" data-cycle-auto-height=true data-cycle-fx="fade">
         <img src="1.jpg">
         <img src="2.jpg">
         <img src="3.jpg">
