@@ -34,6 +34,12 @@ class TaggableImage(dict):
     def __del__(self):
         TaggableImage.loaded.remove(self)
 
+    def __str__(self):
+        return "("+self.path+":"+dict.__str__(self)+")"
+
+    def __repr__(self):
+        return "("+self.path+":"+dict.__repr__(self)+")"
+
     def load_properties(self):
         xmp_file = XMPFiles(file_path=self.path, open_forupdate=False)
         try:

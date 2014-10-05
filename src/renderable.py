@@ -1,28 +1,37 @@
+import json
+
 class Canvas:
 
-    scripts = ["jquery", "cycle2", "fullscreen", "cycle2.tile", "cycle2.shuffle", "cycle2.scrollVert"]
+    scripts = ["jquery", "cycle2", "fullscreen", "cycle2.tile", "cycle2.shuffle", "cycle2.scrollVert", "slideshow"]
 
     images = []
 
-    options = {"stretch_to_fit": True, "change_interval_ms": 4000}
+    options = {"stretch_to_fit": True, "change_interval_ms": 4000, "fullscreen_key":'f'}
     #Strecth to fit NYI
 
 
 
+    doc = ""
+
+    @staticmethod
+    def append(string):
+        Canvas.doc += string+"\n"
 
     @staticmethod
     def render():
-        doc = "<!DOCTYPE html><html>"
+        Canvas.doc = ""
+        Canvas.append("<!DOCTYPE html>\n<html>")
 
         #Header
-        doc += "<head>"
-        doc += "".join([('<script type="test/javascript" src="'+script+'.js"></script>') for script in Canvas.scripts])
-        doc += "</head>"
+        Canvas.append("<head>")
+        Canvas.append("\n".join([('<script type="text/javascript" src="'+script+'.js"></script>') for script in
+                                 Canvas.scripts]))
+        Canvas.append("</head>")
 
         #Style
-        doc += "<style>"
-        doc += "#slideshow { width: 100%; height:100%;} div {background-color: black;} body {background-color: black;}"
-        doc += "</style>"
+        Canvas.append("<style>")
+        Canvas.append("#slideshow { width: 100%; height:100%;} div {background-color: black;} body {background-color: black;}")
+        Canvas.append("</style>")
 
         #Script
         #Slideshow options
@@ -31,17 +40,17 @@ class Canvas:
                              "fx": "fade",
                              "timeout": Canvas.options["change_interval_ms"]}
 
-        doc += "<script>"
-
-        doc += "</script>"
+        Canvas.append("<script>")
+        Canvas.append("$(function(){initSlideShow("+json.dumps(Canvas.options)+","+json.dumps(slideshow_options)+");});")
+        Canvas.append("</script>")
 
         #Body/Slideshow
-        doc += '<body><div id="slideshow" data-cycle-auto-height=false>'
-        doc += "".join([image.html for image in Canvas.images])
-        doc += '</div></body>'
+        Canvas.append('<body>\n<div id="slideshow" data-cycle-auto-height=false>')
+        Canvas.append("".join([image.html() for image in Canvas.images]))
+        Canvas.append('</div>\n</body>')
 
-
-        doc += "</html>"
+        Canvas.append("</html>")
+        return Canvas.doc
     
 
 
