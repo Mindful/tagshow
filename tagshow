@@ -5,22 +5,48 @@ import os
 import code
 import readline
 import rlcompleter
+import shutil
 from image import Image
 from renderable import Canvas
 
 EXTENSIONS = [".jpg", ".png", ".gif"]
 IMAGES = []
 
+SCRIPT_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "scripts")
+IMG_DIR = os.getcwd()
+
 
 def get_image(name):
     try:
         IMAGES.append(Image(name))
-    except:
-        print("Could not get image with name ", name)
+        return True
+    except Exception as e:
+        print("Could not get image with name", name)
+        print(e)
 
 #TODO: we could save the last version and add an undo(), though we'd also have to save the last command so we could undo
 #saves by saving the last version
 #also we could better display changes like [x] -> [y]
+
+
+def find_and_get_image(name):
+    failures = 0
+    for extension in EXTENSIONS:
+        if get_image(name+extension):
+            get_image(name+extension)
+            success = name+extension
+            break
+        else:
+            failures += 1
+            print("Could not find image as "+name+extension)
+
+    if failures == len(EXTENSIONS):
+        raise "Could not find image "+name
+    else:
+        print("Found image as "+success)
+
+    display()
+
 
 
 def display():
@@ -33,7 +59,7 @@ def tag(tagname, value):
     display()
 
 
-def clear():
+def clear_tags():
     for img in IMAGES:
         img.clear()
     display()
@@ -53,6 +79,40 @@ def render(show_name):
     print("Slideshow named", '"'+show_name+'"', "successfully compiled from ", IMAGES)
 
 
+def slideshow(show_name, include_scripts = True, include_images = True):
+    if not os.path.exists(show_name):
+        os.mkdir(show_name)
+    else:
+        raise show_name+" already exists as either a file or directory"
+
+    for script in Canvas.scripts:
+        shutil.copy(os.path.join(SCRIPT_DIR, script+".js"), os.path.join(show_name, script+".js"))
+
+    for img in IMAGES:
+        shutil.copy(os.path.join(IMG_DIR, img), os.path.join(show_name, img))
+
+    prev_directory = os.getcwd()
+    os.chdir(show_name)
+    render(show_name)
+    os.chdir(prev_directory)
+
+
+def set_script_dir(name):
+    if os.path.exists(name):
+        global SCRIPT_DIR
+        SCRIPT_DIR = name
+    else:
+        raise "Nonexistant directory"
+
+def set_img_dir(name):
+    if os.path.exists(name):
+        global IMG_DIR
+        IMG_DIR = name
+    else:
+        raise "Nonexistant directory"
+
+
+
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         print("Found arguments, attempting to select input files")
@@ -66,7 +126,7 @@ if __name__ == "__main__":
         if '.' in name:
             get_image(name)
         else:
-            (get_image(name+extension) for extension in EXTENSIONS)
+            find_and_get_image(name)
 
 
     #TODO: this should support making slideshows too, and selecting/reselecting by tag

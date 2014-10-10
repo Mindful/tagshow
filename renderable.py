@@ -6,8 +6,9 @@ class Canvas:
 
     images = []
 
-    options = {"stretch_to_fit": True, "change_interval_ms": 4000, "fullscreen_key":'f'}
+    options = {"stretch_to_fit": True, "randomize_order": True, "random": False, "change_interval_ms": 30000, "fullscreen_key":'f'}
     #Strecth to fit NYI
+    #Randomize order NYI (distinct from random because it's a random set order, not true random)
 
 
 
@@ -38,7 +39,8 @@ class Canvas:
         slideshow_options = {"autoHeight": "false",
                              "manualTrump": "false",
                              "fx": "fade",
-                             "timeout": Canvas.options["change_interval_ms"]}
+                             "timeout": Canvas.options["change_interval_ms"],
+                             "random": Canvas.options["random"]}
 
         Canvas.append("<script>")
         Canvas.append("$(function(){initSlideShow("+json.dumps(Canvas.options)+","+json.dumps(slideshow_options)+");});")

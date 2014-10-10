@@ -32,7 +32,8 @@ class TaggableImage(dict):
         TaggableImage.loaded.append(self)
 
     def __del__(self):
-        TaggableImage.loaded.remove(self)
+        if self in TaggableImage.loaded:
+            TaggableImage.loaded.remove(self)
 
     def __str__(self):
         return "("+self.path+":"+dict.__str__(self)+")"
@@ -43,7 +44,11 @@ class TaggableImage(dict):
     def load_properties(self):
         xmp_file = XMPFiles(file_path=self.path, open_forupdate=False)
         try:
-            prop_list = xmp_file.get_xmp().get_property(consts.XMP_NS_DC, TaggableImage.xmp_key)
+            xmp = xmp_file.get_xmp()
+            if xmp is not None:
+                prop_list = xmp_file.get_xmp().get_property(consts.XMP_NS_DC, TaggableImage.xmp_key)
+            else:
+                prop_list = "[]"
         except XMPError:
             return
         prop_list = json.loads(prop_list)
