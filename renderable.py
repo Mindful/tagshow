@@ -6,7 +6,7 @@ class Canvas:
 
     images = []
 
-    options = {"stretch_to_fit": True, "randomize_order": True, "random": False, "change_interval_ms": 30000, "fullscreen_key":'f'}
+    options = {"stretch_to_fit": True, "randomize_order": True, "random": False, "change_interval_ms": 20000, "fullscreen_key":'f'}
     #Strecth to fit NYI
     #Randomize order NYI (distinct from random because it's a random set order, not true random)
 

@@ -1,4 +1,5 @@
-
+A project for tagging images using XMP and spitting them out as simple HTML slideshows. Written primarily for
+my own use, and because I was curious about XMP.
 
 Dependencies:
  - [jquery](http://jquery.com/)

@@ -18,7 +18,10 @@ IMG_DIR = os.getcwd()
 
 def get_image(name):
     try:
-        IMAGES.append(Image(name))
+        dup = (len([img for img in IMAGES if img.path == name]) > 0)
+        #"in" operator wasn't doing the job, the above is hacky (should redefine an operator instead) but quick
+        if not dup:
+            IMAGES.append(Image(name))
         return True
     except Exception as e:
         print("Could not get image with name", name)
@@ -47,6 +50,13 @@ def find_and_get_image(name):
 
     display()
 
+def get_dir():
+    files = [name for name in os.listdir(os.getcwd()) if os.path.isfile(os.path.join(os.getcwd(), name)) and
+                "."+name.split(".")[-1] in EXTENSIONS]
+    for file in files:
+        get_image(file)
+    display()
+
 
 
 def display():
@@ -64,6 +74,11 @@ def clear_tags():
         img.clear()
     display()
 
+
+def clear():
+    global IMAGES
+    del IMAGES[:]
+    display()
 
 def save():
     for img in IMAGES:
@@ -89,7 +104,7 @@ def slideshow(show_name, include_scripts = True, include_images = True):
         shutil.copy(os.path.join(SCRIPT_DIR, script+".js"), os.path.join(show_name, script+".js"))
 
     for img in IMAGES:
-        shutil.copy(os.path.join(IMG_DIR, img), os.path.join(show_name, img))
+        shutil.copy(os.path.join(IMG_DIR, img.path), os.path.join(show_name, img.path))
 
     prev_directory = os.getcwd()
     os.chdir(show_name)
@@ -118,9 +133,8 @@ if __name__ == "__main__":
         print("Found arguments, attempting to select input files")
         file_names = sys.argv[1:-1]
     else:
-        print("No arguments, selecting folder")
-        file_names = [name for name in os.listdir(os.getcwd()) if os.path.isfile(os.path.join(os.getcwd(), name)) and
-                      "."+name.split(".")[-1] in EXTENSIONS]
+        print("No arguments found")
+        file_names = []
 
     for name in file_names:
         if '.' in name:
