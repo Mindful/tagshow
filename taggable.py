@@ -1,28 +1,31 @@
-from libxmp import XMPFiles, consts, XMPError
+from libxmp import XMPFiles, consts, XMPError, XMPMeta
 import json
 
 
-class TaggablelImageList(list):
+class TaggableImageList(list):
 
     def where(self, property_name, check):
-        return [img for img in self if (check(img[property_name]))]
+        return TaggableImageList([img for img in self if (check(img[property_name]))])
+
+    def where_has_prop(self, property_name):
+        return TaggableImageList([img for img in self if property_name in img])
 
     def where_prop_equals(self, property_name, value):
-        return self.where(property_name, lambda x: value == x)
+        return self.where_has_prop(property_name).where(property_name, lambda x: value == x)
 
     def where_prop_contains(self, property_name, value):
-        return self.where(property_name, lambda x: value in x)
+        return self.where_has_prop(property_name).where(property_name, lambda x: value in x)
 
     def where_prop_greater(self, property_name, value):
-        return self.where(property_name, lambda x: value < x)
+        return self.where_has_prop(property_name).where(property_name, lambda x: value < x)
 
     def where_prop_lesser(self, property_name, value):
-        return self.where(property_name, lambda x: value > x)
+        return self.where_has_prop(property_name).where(property_name, lambda x: value > x)
 
 
 class TaggableImage(dict):
 
-    loaded = TaggablelImageList()
+    loaded = TaggableImageList()
 
     xmp_key = "SlideshowProperties"
 
@@ -59,6 +62,9 @@ class TaggableImage(dict):
     def save_properties(self):
         xmp_file = XMPFiles(file_path=self.path, open_forupdate=True)
         xmp = xmp_file.get_xmp()
+        if xmp is None:
+            xmp = XMPMeta()
+
         xmp.set_property(consts.XMP_NS_DC, TaggableImage.xmp_key, json.dumps(self))
         if xmp_file.can_put_xmp(xmp):
             xmp_file.put_xmp(xmp)

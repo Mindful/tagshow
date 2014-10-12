@@ -6,17 +6,19 @@ import code
 import readline
 import rlcompleter
 import shutil
+import re
 from image import Image
 from renderable import Canvas
+from taggable import TaggableImageList
 
 EXTENSIONS = [".jpg", ".png", ".gif"]
-IMAGES = []
+IMAGES = TaggableImageList()
 
 SCRIPT_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "scripts")
 IMG_DIR = os.getcwd()
 
 
-def get_image(name):
+def __get_image(name):
     try:
         dup = (len([img for img in IMAGES if img.path == name]) > 0)
         #"in" operator wasn't doing the job, the above is hacky (should redefine an operator instead) but quick
@@ -27,16 +29,23 @@ def get_image(name):
         print("Could not get image with name", name)
         print(e)
 
+
+def __get_dir():
+    files = [name for name in os.listdir(os.getcwd()) if os.path.isfile(os.path.join(os.getcwd(), name)) and
+                "."+name.split(".")[-1] in EXTENSIONS]
+    for file in files:
+        __get_image(file)
+
 #TODO: we could save the last version and add an undo(), though we'd also have to save the last command so we could undo
 #saves by saving the last version
 #also we could better display changes like [x] -> [y]
 
 
-def find_and_get_image(name):
+def get(name):
     failures = 0
     for extension in EXTENSIONS:
-        if get_image(name+extension):
-            get_image(name+extension)
+        if __get_image(name+extension):
+            __get_image(name+extension)
             success = name+extension
             break
         else:
@@ -50,20 +59,59 @@ def find_and_get_image(name):
 
     display()
 
-def get_dir():
-    files = [name for name in os.listdir(os.getcwd()) if os.path.isfile(os.path.join(os.getcwd(), name)) and
-                "."+name.split(".")[-1] in EXTENSIONS]
-    for file in files:
-        get_image(file)
+
+def where_has_prop(property_name):
+    __get_dir()
+    global IMAGES
+    IMAGES = IMAGES.where_has_prop(property_name)
     display()
 
+
+def where_prop_equals(property_name, value):
+    __get_dir()
+    global IMAGES
+    IMAGES = IMAGES.where_prop_equals(property_name, value)
+    display()
+
+
+def where_prop_contains(property_name, value):
+    __get_dir()
+    global IMAGES
+    IMAGES = IMAGES.where_prop_contains(property_name, value)
+    display()
+
+
+def where_prop_greater(property_name, value):
+    __get_dir()
+    global IMAGES
+    IMAGES = IMAGES.where_prop_greater(property_name, value)
+    display()
+
+def where_prop_lesser(property_name, value):
+    __get_dir()
+    global IMAGES
+    IMAGES = IMAGES.where_prop_lesser(property_name, value)
+    display()
+
+
+def get_dir():
+    __get_dir()
+    display()
+
+
+def get_numbered_prefix(prefix):
+    files = [name for name in os.listdir(os.getcwd()) if os.path.isfile(os.path.join(os.getcwd(), name)) and
+                "."+name.split(".")[-1] in EXTENSIONS and re.fullmatch(prefix+'\d+', name.split(".")[0])]
+    for file in files:
+        __get_image(file)
+    display()
 
 
 def display():
     print(IMAGES)
 
 
-def tag(tagname, value):
+def tag(tagname, value=True):
     for img in IMAGES:
         img[tagname] = value
     display()
@@ -138,7 +186,7 @@ if __name__ == "__main__":
 
     for name in file_names:
         if '.' in name:
-            get_image(name)
+            __get_image(name)
         else:
             find_and_get_image(name)
 
