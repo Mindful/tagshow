@@ -41,6 +41,7 @@ def __get_dir():
 #also we could better display changes like [x] -> [y]
 
 
+#TODO: both get and unget could/should take a variable number of args
 def get(name):
     failures = 0
     for extension in EXTENSIONS:
@@ -56,6 +57,16 @@ def get(name):
         raise "Could not find image "+name
     else:
         print("Found image as "+success)
+
+    display()
+
+
+def unget(name):
+    for ext in EXTENSIONS:
+        exname = name+ext
+        for img in IMAGES:
+            if img.path == exname:
+                del IMAGES[IMAGES.index(img)]
 
     display()
 
@@ -92,6 +103,7 @@ def where_prop_lesser(property_name, value):
     global IMAGES
     IMAGES = IMAGES.where_prop_lesser(property_name, value)
     display()
+
 
 
 def get_dir():
@@ -188,7 +200,7 @@ if __name__ == "__main__":
         if '.' in name:
             __get_image(name)
         else:
-            find_and_get_image(name)
+            get(name)
 
 
     #TODO: this should support making slideshows too, and selecting/reselecting by tag
