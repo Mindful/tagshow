@@ -10,6 +10,7 @@ import re
 from image import Image
 from renderable import Canvas
 from taggable import TaggableImageList
+import operator
 
 EXTENSIONS = [".jpg", ".png", ".gif"]
 IMAGES = TaggableImageList()
@@ -107,8 +108,26 @@ def where_prop_lesser(property_name, value):
 
 
 def get_dir():
+    print("Getting dir...")
     __get_dir()
+    IMAGES.sort(key=operator.attrgetter('path'))
     display()
+
+def image_by_image():
+    print("For tags with values, please use the notation <tag>:<value>. Otherwise, a tag by itself will default to"
+          "a value of true.")
+    for img in IMAGES:
+        a = input("Please enter tags for image \""+img.path+"\" separted by spaces: ")
+        tags = a.split(" ")
+        for tag in tags:
+            if ":" in tag:
+                img[tag.split(":")[0]] = eval(tag.split(":")[1])
+            else:
+                img[tag] = True
+        img.save_properties()
+        print(img)
+    print("Processed all images in directory")
+
 
 
 def get_numbered_prefix(prefix):

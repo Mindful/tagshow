@@ -52,6 +52,7 @@ class Canvas:
         Canvas.append('</div>\n</body>')
 
         Canvas.append("</html>")
+        Canvas.images = []
         return Canvas.doc
     
 

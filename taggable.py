@@ -10,6 +10,9 @@ class TaggableImageList(list):
     def where_has_prop(self, property_name):
         return TaggableImageList([img for img in self if property_name in img])
 
+    def where_without_prop(self, property_name):
+        return TaggableImageList([img for img in self if property_name not in img])
+
     def where_prop_equals(self, property_name, value):
         return self.where_has_prop(property_name).where(property_name, lambda x: value == x)
 
