@@ -43,7 +43,7 @@ class Canvas:
                              "random": Canvas.options["random"]}
 
         Canvas.append("<script>")
-        Canvas.append("$(function(){initSlideShow("+json.dumps(Canvas.options)+","+json.dumps(slideshow_options)+");});")
+        Canvas.append("$(window).load(function(){initSlideShow("+json.dumps(Canvas.options)+","+json.dumps(slideshow_options)+");});")
         Canvas.append("</script>")
 
         #Body/Slideshow
