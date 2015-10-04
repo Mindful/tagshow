@@ -17,13 +17,31 @@ class TaggableImageList(list):
         return self.where_has_prop(property_name).where(property_name, lambda x: value == x)
 
     def where_prop_contains(self, property_name, value):
-        return self.where_has_prop(property_name).where(property_name, lambda x: value in x)
+        return self.where_has_prop(property_name).where(property_name, lambda x: self.__safe_contains(value, x))
 
     def where_prop_greater(self, property_name, value):
-        return self.where_has_prop(property_name).where(property_name, lambda x: value < x)
+        return self.where_has_prop(property_name).where(property_name, lambda x: self.__safe_lesser(value, x))
 
     def where_prop_lesser(self, property_name, value):
-        return self.where_has_prop(property_name).where(property_name, lambda x: value > x)
+        return self.where_has_prop(property_name).where(property_name, lambda x: self.__safe_greater(value,x))
+
+    def __safe_greater(self, lhs, rhs):
+        try:
+            return lhs > rhs
+        except:
+            return False
+
+    def __safe_lesser(self, lhs, rhs):
+        try:
+            return lhs < rhs
+        except:
+            return False
+
+    def __safe_contains(self, lhs, rhs):
+        try:
+            return lhs in rhs
+        except:
+            return False
 
 
 class TaggableImage(dict):

@@ -7,3 +7,7 @@ Dependencies:
  - [jquery fullscreen](http://plugins.jquery.com/fullscreen/)
  - [xdotool](http://www.semicomplete.com/projects/xdotool/) (f you want to run the bash script)
  - ...and of course, Python
+ 
+Known Bugs:
+ - When using image_by_image(), <key>:<value> pair tags record the value as the first element of a tuple in cases
+ where they are not the last tag in the comma-separated list.

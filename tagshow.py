@@ -155,7 +155,8 @@ def get_dir():
 
 def image_by_image():
     print("For tags with values, please use the notation <tag>:<value>. Otherwise, a tag by itself will default to"
-          "a value of true.")
+          " a value of true. Note that the <tag> is assumed to be a string and can be unquoted, but <value> must be a valid"
+          " python value. Raw numbers are fine, but strings must be in quotes.")
     for img in IMAGES:
         a = input("Please enter tags for image \""+img.path+"\" separted by spaces: ")
         tags = a.split(" ")
