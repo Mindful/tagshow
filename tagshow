@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 
+import inspect
+
 from tagshow import *
 
 
@@ -20,6 +22,20 @@ if __name__ == "__main__":
             get(name)
 
 
+    functions = []
+    globals_list = globals().copy();
+    for key, value in globals_list.items():
+        if hasattr(value, '__call__'):
+            functions.append(key + "()")
+
+    for key, value in globals_list.items():
+        if inspect.isclass(value):
+            functions.remove(key + "()") #Remove constructors
+
+    functions.sort()
+
+
+
     #TODO: this should support making slideshows too, and selecting/reselecting by tag
     print()
     print("-"*24)
@@ -27,6 +43,7 @@ if __name__ == "__main__":
     print("Use the tag(tagname, value) method to tag all selected images, or the clear() method to clear them of tags")
     print("When you are done, call save(), or if you wish to quit without saving call exit()")
     print("You can create a slideshow from the selected images using render(name)")
+    print(functions)
     print("-"*24)
     print()
 
