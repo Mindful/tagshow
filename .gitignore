@@ -4,3 +4,5 @@
 .idea
 images
 *.pyc
+index_data.pickle
+.DS_Store

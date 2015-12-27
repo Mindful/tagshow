@@ -1,9 +1,6 @@
 A project for tagging images using XMP and spitting them out as simple HTML slideshows. Written primarily for
 my own use, and because I was curious about XMP.
 
-TODO:
- - Change the "where_tag_lesser" method not to drop images without that tag from the list.
-
 Dependencies:
  - [jquery](http://jquery.com/)
  - [cycle2](http://jquery.malsup.com/cycle2/)

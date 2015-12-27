@@ -1,0 +1,2 @@
+pixivpy
+python-xmp-toolkit

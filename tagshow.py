@@ -5,7 +5,7 @@ import readline
 import rlcompleter
 import shutil
 import re
-from image import Image
+from image_old import Image
 from renderable import Canvas
 from taggable import TaggableImageList
 import operator
@@ -140,9 +140,9 @@ def where_has_tag(tag_name):
 
 
 def where_tag_equals(tag_name, value):
-    """Selects all images where the given tag's value is equal to the given input value. from the current list of images,
-    removing any images where this is not true (whether because the tag's value is different, or because they do not have the
-    tag) from the list. If the current list of images is empty, instead selects from the current directory."""
+    """Removes all images where the value of the given tag is not equal to the given input value. Images without the tag
+     are ignored, and remain in the current list of images. If the current list of images is empty, the directory will be
+     loaded before performing the operation."""
     __transcribe_function()
     __auto_get_dir_if_fresh()
     global IMAGES
@@ -151,10 +151,9 @@ def where_tag_equals(tag_name, value):
 
 
 def where_tag_contains(tag_name, value):
-    """Selects all images where the given tag's value contains the given input value (according to python's "in"
-    operator"), from the current list of images, removing any images where this is not true (whether because the tag's
-    value does not contain the given value, or because they do not have the tag) from the list. If the current list
-    of images is empty, instead selects from the current directory."""
+    """Removes all images where the value of the given tag does not contain the given input value according to python's
+    "in" operator"). Images without the tag are ignored, and remain in the current list of images. If the current list
+    of images is empty, the directory will be loaded before performing the operation."""
     __transcribe_function()
     __auto_get_dir_if_fresh()
     global IMAGES
@@ -163,10 +162,9 @@ def where_tag_contains(tag_name, value):
 
 
 def where_tag_greater(tag_name, value):
-    """Selects all images where the given tag's value is greater than the given input value, from the current list of
-    images, removing any images where this is not true (whether because the tag's value is not greater, or because they
-    do not have the tag) from the list. If the current list of images is empty, instead selects from the current
-    directory."""
+    """Removes all images where the value of the given tag is not less than or equal to the given input value. Images
+    without the tag are ignored, and remain in the current list of images. If the current list of images is empty, the
+    directory will be loaded before performing the operation."""
     __transcribe_function()
     __auto_get_dir_if_fresh()
     global IMAGES
@@ -174,10 +172,9 @@ def where_tag_greater(tag_name, value):
     display()
 
 def where_tag_lesser(tag_name, value):
-    """Selects all images where the given tag's value is lesser than the given input value, from the current list of
-    images, removing any images where this is not true (whether because the tag's value is not lesser, or because they
-    do not have the tag) from the list. If the current list of images is empty, instead selects from the current
-    directory."""
+    """Removes all images where the value of the given tag is not greater than or equal to the given input value. Images
+    without the tag are ignored, and remain in the current list of images. If the current list of images is empty, the
+    directory will be loaded before performing the operation."""
     __transcribe_function()
     __auto_get_dir_if_fresh()
     global IMAGES
@@ -278,6 +275,7 @@ def clear():
     """Empties the list of current images. Any unsaved changes to tags will be lost."""
     global IMAGES
     del IMAGES[:]
+    BUILDER.clear_commands()
     display()
 
 def save():

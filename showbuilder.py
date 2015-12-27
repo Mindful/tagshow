@@ -25,4 +25,7 @@ class ShowBuilder:
         st = os.stat(out_name)
         os.chmod(out_name, st.st_mode |  stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
 
+    def clear_commands(self):
+        self.commands.clear()
+
 

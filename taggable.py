@@ -1,11 +1,12 @@
 from libxmp import XMPFiles, consts, XMPError, XMPMeta
 import json
+import sys
 
 
 class TaggableImageList(list):
 
     def where(self, property_name, check):
-        return TaggableImageList([img for img in self if (check(img[property_name]))])
+        return TaggableImageList([img for img in self if (property_name not in img or (check(img[property_name])))])
 
     def where_has_prop(self, property_name):
         return TaggableImageList([img for img in self if property_name in img])
@@ -14,16 +15,16 @@ class TaggableImageList(list):
         return TaggableImageList([img for img in self if property_name not in img])
 
     def where_prop_equals(self, property_name, value):
-        return self.where_has_prop(property_name).where(property_name, lambda x: value == x)
+        return self.where(property_name, lambda x: value == x)
 
     def where_prop_contains(self, property_name, value):
-        return self.where_has_prop(property_name).where(property_name, lambda x: self.__safe_contains(value, x))
+        return self.where(property_name, lambda x: self.__safe_contains(value, x))
 
     def where_prop_greater(self, property_name, value):
-        return self.where_has_prop(property_name).where(property_name, lambda x: self.__safe_lesser(value, x))
+        return self.where(property_name, lambda x: self.__safe_lesser(value, x))
 
     def where_prop_lesser(self, property_name, value):
-        return self.where_has_prop(property_name).where(property_name, lambda x: self.__safe_greater(value,x))
+        return self.where(property_name, lambda x: self.__safe_greater(value,x))
 
     def __safe_greater(self, lhs, rhs):
         try:
