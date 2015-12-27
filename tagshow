@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import inspect
+import pprint
 
 from tagshow import *
 
@@ -21,35 +22,41 @@ if __name__ == "__main__":
         else:
             get(name)
 
-
     functions = []
     globals_list = globals().copy();
-    for key, value in globals_list.items():
-        if hasattr(value, '__call__'):
-            functions.append(key + "()")
+    for func_name, func in globals_list.items():
+        if hasattr(func, '__call__') and not inspect.isclass(func): #If it's actually a function, and not a constructor
+            argument_details = inspect.getargspec(func)
+            func_args = argument_details.args
+            if argument_details.defaults:
+                for index, element in enumerate(argument_details.defaults):
+                    func_index = -(len(argument_details.defaults)-index)
+                    old_func_name = func_args[func_index]
+                    func_args[func_index] = old_func_name+"="+str(element)
 
-    for key, value in globals_list.items():
-        if inspect.isclass(value):
-            functions.remove(key + "()") #Remove constructors
+            if argument_details.varargs:
+                func_args.append("*"+argument_details.varargs)
+            functions.append(func_name + "(" + ', '.join(func_args)+")")
 
     functions.sort()
 
 
 
-    #TODO: this should support making slideshows too, and selecting/reselecting by tag
+    pp = pprint.PrettyPrinter(indent=2)
     print()
     print("-"*24)
     print("Selected ", IMAGES)
     print("Use the tag(tagname, value) method to tag all selected images, or the clear() method to clear them of tags")
     print("When you are done, call save(), or if you wish to quit without saving call exit()")
-    print("You can create a slideshow from the selected images using render(name)")
-    print(functions)
+    print("You can create a slideshow from images selected with where_tag methods using slideshow(show_name)")
+    print("Lastly, remember that you can get help on any of this program's methods with help(method_name)")
+    pp.pprint(functions)
     print("-"*24)
     print()
 
 
     #TODO: we should replace this with a limited terminal that only runs our commands (converts them into python)
-    #and throws out everything else
+    #and throws out everything else. Wouldn't necessarily be that difficult since we already have a list of functions
     vars = globals()
     vars.update(locals())
     readline.set_completer(rlcompleter.Completer(vars).complete)
