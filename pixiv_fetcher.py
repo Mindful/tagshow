@@ -1,6 +1,7 @@
 from pixivpy3 import *
 from urllib.parse import urlparse, parse_qs
 from index import Index
+import os.path
 
 
 class PixivFetcher:
@@ -40,14 +41,18 @@ class PixivFetcher:
 
     def collect_illustrations(self):
         bookmarks_iterator = self.BookmarksIterator(self.api, self.user_id)
-        return list(bookmarks_iterator)
+        return [illustration for illustration in bookmarks_iterator if illustration is not None][0:5] #TODO: REMOVE THIS LIMIT OF FIVE
 
     def download_and_register_illustrations(self, illustrations):
         image_registration_arguments = []
         for illustration in illustrations:
-            name = 'pixiv_'+ str(illustration.id)
             image_url = illustration.meta_single_page.get('original_image_url', illustration.image_urls.large)
-            tags = illustration.tags
+            tags = [tag['name'] for tag in illustration.tags]
+
+            url_basename = os.path.basename(image_url)
+            extension = os.path.splitext(url_basename)[1]
+            name = 'pixiv_{}{}'.format(str(illustration.id), extension)
+
             self.app_api.download(url=image_url, name=name)
             image_registration_arguments.append((name, tags))
 
@@ -67,7 +72,7 @@ class PixivFetcher:
 
 
 def test():
-    a = PixivFetcher('', '')
+    a = PixivFetcher()
     b = a.fetch_single_page_count_bookmarks()
     print(b)
 

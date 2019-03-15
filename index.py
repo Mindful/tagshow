@@ -23,7 +23,7 @@ class Index:
     def _load(self):
         try:
             with open(self.index_file_name, 'rb') as data_file:
-                self.data = pickle.load(data_file.read())
+                self.data = pickle.load(data_file)
         except FileNotFoundError:
             self.data = {self.next_available_id_key: 1}
             self.save()
@@ -47,15 +47,15 @@ class Index:
 
     def upsert_illustration_list(self, illustration_list):
         for illustration in illustration_list:
-            self.data[illustration.id] = illustration
+            self.data[illustration.index_id] = illustration
         self.save()
 
     def register_new_illustration_file(self, file_location, initial_tags):
         return self.register_new_illustration_list([(file_location, initial_tags)])[0]
 
     def register_new_illustration_list(self, argument_list):
-        ids = self._requisition_id_range(len(argument_list))
-        new_illustrations = [illustration_file.IllustrationFile(next(ids), file_location, initial_tags)
+        id_iterator = iter(self._requisition_id_range(len(argument_list)))
+        new_illustrations = [illustration_file.IllustrationFile(next(id_iterator), file_location, initial_tags)
                              for file_location, initial_tags in argument_list]
 
         for illustration in new_illustrations:
