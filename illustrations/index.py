@@ -1,7 +1,7 @@
 import pickle
 import logging
 
-from illustrations import illustration_file
+from . import illustration_file
 logging.basicConfig(level=logging.INFO, format='[%(asctime)s] %(levelname)s: %(message)s', datefmt='%I:%M:%H')
 
 
@@ -32,6 +32,15 @@ class Index:
             self.data = {self.next_available_id_key: 1}
             self.save()
 
+    def present_images(self):
+        pass
+
+    def missing_images(self):
+        pass
+
+    def healthy_images(self):
+        present_images = self.present_images()
+
     def verify(self):
         pass #TODO: look at all the images in our index, make sure we can find them by name (if not, find all images we don't know about, check them for metadata)
 
@@ -56,10 +65,10 @@ class Index:
     def register_new_illustration_file(self, file_location, initial_tags):
         return self.register_new_illustration_list([(file_location, initial_tags)])[0]
 
-    def register_new_illustration_list(self, argument_list):
-        id_iterator = iter(self._requisition_id_range(len(argument_list)))
-        new_illustrations = [illustration_file.IllustrationFile(next(id_iterator), file_location, initial_tags)
-                             for file_location, initial_tags in argument_list]
+    def register_new_illustration_list(self, completed_downloads):
+        id_iterator = iter(self._requisition_id_range(len(completed_downloads)))
+        new_illustrations = [illustration_file.IllustrationFile(next(id_iterator), completed_download.name,
+                                    completed_download.tags) for completed_download in completed_downloads]
 
         for illustration in new_illustrations:
             illustration.save_index_id_to_file()

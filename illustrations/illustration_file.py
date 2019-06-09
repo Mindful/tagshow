@@ -17,6 +17,9 @@ class IllustrationFile:
     def __str__(self):
         return "({}, {})".format(self.index_id, self.location)
 
+    def __repr__(self):
+        return str(self.__dict__)
+
     def load_file_index_id(self):
         xmp_file = XMPFiles(file_path=self.location, open_forupdate=False)
         try:
