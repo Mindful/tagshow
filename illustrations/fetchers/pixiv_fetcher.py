@@ -1,11 +1,12 @@
-from pixivpy3 import *
-from urllib.parse import urlparse, parse_qs
-from index import Index
 import os.path
-import yaml
+from urllib.parse import urlparse, parse_qs
+from pixivpy3 import *
+
+from illustrations.fetchers.base_fetcher import BaseFetcher
+from illustrations.index import Index
 
 
-class PixivFetcher:
+class PixivFetcher(BaseFetcher):
 
     class BookmarksIterator:
         def __init__(self, pixiv_api, user_id):
@@ -36,7 +37,11 @@ class PixivFetcher:
 
     def __init__(self):
         self.app_api = AppPixivAPI()
-        login_response = self.app_api.login(user, password)
+        config = self.get_config()
+        login = config['pixiv']['login']
+        password = config['pixiv']['password']
+
+        login_response = self.app_api.login(login, password)
         self.user_id = login_response['response']['user']['id']
 
     def collect_illustrations(self):
@@ -67,17 +72,8 @@ class PixivFetcher:
         self.download_and_register_illustrations(single_illustrations)
 
 
-
-
-
-
-def test():
-    a = PixivFetcher()
-    b = a.fetch_single_page_bookmarks()
-    print(b)
-
-if __name__ =='__main__':
-    test()
+    def fetch(self):
+        self.fetch_single_page_bookmarks()
 
 
 

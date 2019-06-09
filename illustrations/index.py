@@ -1,5 +1,9 @@
 import pickle
-import illustration_file
+import logging
+
+from illustrations import illustration_file
+logging.basicConfig(level=logging.INFO, format='[%(asctime)s] %(levelname)s: %(message)s', datefmt='%I:%M:%H')
+
 
 class Index:
     index_file_name = 'index_data.pickle'

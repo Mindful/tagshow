@@ -1,0 +1,3 @@
+2019-06-09 12:42:26,448 - spam_application - INFO - creating an instance of auxiliary_module.Auxiliary
+2019-06-09 12:42:36,456 - spam_application - WARNING - test
+2019-06-09 12:42:40,676 - spam_application - WARNING - test
