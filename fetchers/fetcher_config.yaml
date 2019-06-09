@@ -2,6 +2,7 @@ pixiv:
   login: PII
   password: PII
 
+
 danbooru:
   login: PII
   password: PII
