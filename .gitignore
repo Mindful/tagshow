@@ -6,3 +6,4 @@ images
 *.pyc
 index_data.pickle
 .DS_Store
+fetchers/fetcher_config.yaml

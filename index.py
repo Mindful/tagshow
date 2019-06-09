@@ -35,7 +35,6 @@ class Index:
         with open(self.index_file_name, 'wb') as data_file:
             pickle.dump(self.data, data_file)
 
-
     def _requisition_id_range(self, count):
         next_id = self.data[self.next_available_id_key]
         self.data[self.next_available_id_key] = next_id + count

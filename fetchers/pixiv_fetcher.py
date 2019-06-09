@@ -2,6 +2,7 @@ from pixivpy3 import *
 from urllib.parse import urlparse, parse_qs
 from index import Index
 import os.path
+import yaml
 
 
 class PixivFetcher:
@@ -33,14 +34,13 @@ class PixivFetcher:
                 query_parameters = parse_qs(urlparse(next_page_url).query)
                 self.next_max_bookmark_id = query_parameters['max_bookmark_id']
 
-    def __init__(self, user, password):
-        self.api = AppPixivAPI()
+    def __init__(self):
         self.app_api = AppPixivAPI()
-        login_response = self.api.login(user, password)
+        login_response = self.app_api.login(user, password)
         self.user_id = login_response['response']['user']['id']
 
     def collect_illustrations(self):
-        bookmarks_iterator = self.BookmarksIterator(self.api, self.user_id)
+        bookmarks_iterator = self.BookmarksIterator(self.app_api, self.user_id)
         return [illustration for illustration in bookmarks_iterator if illustration is not None][0:5] #TODO: REMOVE THIS LIMIT OF FIVE
 
     def download_and_register_illustrations(self, illustrations):
@@ -58,7 +58,7 @@ class PixivFetcher:
 
         Index.get_or_create_instance().register_new_illustration_list(image_registration_arguments)
 
-    def fetch_single_page_count_bookmarks(self):
+    def fetch_single_page_bookmarks(self):
         illustrations = self.collect_illustrations()
         single_illustrations = [illustration_data for illustration_data in illustrations
                                 if illustration_data['page_count'] == 1]
@@ -73,7 +73,7 @@ class PixivFetcher:
 
 def test():
     a = PixivFetcher()
-    b = a.fetch_single_page_count_bookmarks()
+    b = a.fetch_single_page_bookmarks()
     print(b)
 
 if __name__ =='__main__':

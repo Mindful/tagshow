@@ -1,2 +1,3 @@
 pixivpy
 python-xmp-toolkit
+pyyaml
