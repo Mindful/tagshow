@@ -46,28 +46,21 @@ class Index:
 
         return present_illustrations
 
-    def healthy_illustrations(self):
-        healthy_illustrations = []
-        present_illustrations = self.present_illustrations()
-        for illustration in present_illustrations:
-            healthy = True
-            try:
-                illustration.load_file_index_id()
-            except Exception:
-                healthy = False
-
-            healthy = (healthy and (illustration.index_id == illustration.file_index_id))
-            if (healthy):
-                healthy_illustrations.append(illustration)
-
-        return healthy_illustrations
-
     def present_ids_for_source(self, source):
         present_illustrations = self.present_illustrations()
         return set([illustration.source_id for illustration in present_illustrations if illustration.source == source])
 
-    def verify(self):
-        pass #TODO: look at all the images in our index, make sure we can find them by name (if not, find all images we don't know about, check them for metadata)
+    def cleanup(self):
+        all_illustrations = self.get_all_illustrations()
+        present_illustrations = self.present_illustrations()
+
+        missing_illustrations = set(all_illustrations) - set(present_illustrations)
+        for illustration in missing_illustrations:
+            logging.warning("Unable to find illustration " + str(illustration) +
+                            ", so it will be deleted from the index.")
+            del self.data[illustration.index_id]
+
+        self.save()
 
     def save(self):
         with open(self.index_file_name, 'wb') as data_file:
@@ -101,7 +94,14 @@ class Index:
 
         self.upsert_illustration_list(new_illustrations)
 
-
-
     def get_illustration_by_id(self, illustration_id):
         return self.data.get(illustration_id)
+
+    def get_all_illustrations(self):
+        keys = self._illustration_id_keys()
+        illustrations = []
+        for key in keys:
+            illustrations.append(self.data[key])
+
+        return illustrations
+
