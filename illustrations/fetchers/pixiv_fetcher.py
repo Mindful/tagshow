@@ -1,4 +1,3 @@
-import os.path
 from urllib.parse import urlparse, parse_qs
 from pixivpy3 import *
 from illustrations.fetchers.base_fetcher import BaseFetcher
@@ -59,7 +58,7 @@ class PixivFetcher(BaseFetcher):
     def __init__(self):
         self.index = Index.get_or_create_instance()
         self.app_api = AppPixivAPI()
-        config = self.get_config()['pixiv']
+        config = self.get_config()[PixivFetcher.SOURCE_NAME]
 
         conf_login = config['login']
         conf_password = config['password']
@@ -74,8 +73,7 @@ class PixivFetcher(BaseFetcher):
     def _collect_bookmarked_illustrations(self):
         self.log("Fetching list of bookmarks for user id ", self.user_id)
         bookmarks_iterator = self.BookmarksIterator(self.app_api, self.user_id)
-        bookmarked_illustrations = [illustration for illustration in bookmarks_iterator if illustration is not None][
-        0:5]  # TODO: REMOVE THIS LIMIT OF FIVE
+        bookmarked_illustrations = [illustration for illustration in bookmarks_iterator if illustration is not None]
 
         self.log("Found ", len(bookmarked_illustrations), " bookmarked illustrations")
         return bookmarked_illustrations
@@ -130,8 +128,7 @@ class PixivFetcher(BaseFetcher):
                     self.log("Please enter a single integer, or sequence of integers separated by commas like \"1,2,3\"")
 
     def _construct_download_target(self, url, illust_id, tags, page_number=None):
-        url_basename = os.path.basename(url)
-        extension = os.path.splitext(url_basename)[1][1:]
+        extension = self.file_extension_from_image_url(url)
 
         if page_number:
             name = 'pixiv_{}_p{}.{}'.format(str(illust_id), page_number, extension)
@@ -151,17 +148,13 @@ class PixivFetcher(BaseFetcher):
 
         self.index.register_new_illustration_list(completed_downloads)
 
-
-
     def fetch(self):
         existing_ids = self.index.present_ids_for_source(PixivFetcher.SOURCE_NAME)
-        bookmarked_illustrations = self._collect_bookmarked_illustrations()
+        bookmarked_illustrations = self._collect_bookmarked_illustrations()[0:5]  # TODO: REMOVE THIS LIMIT OF FIVE
 
         self.log("Found ", len(existing_ids), " illustrations already present from the same source")
-
         unprocessed_illustrations = [illustration for illustration in bookmarked_illustrations if illustration.id
                                      not in existing_ids]
-
         self.log(len(unprocessed_illustrations), " illustrations to be downloaded")
 
 

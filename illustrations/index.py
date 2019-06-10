@@ -51,6 +51,7 @@ class Index:
         return set([illustration.source_id for illustration in present_illustrations if illustration.source == source])
 
     def cleanup(self):
+        logging.info("Running index cleanup...")
         all_illustrations = self.get_all_illustrations()
         present_illustrations = self.present_illustrations()
 

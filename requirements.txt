@@ -1,3 +1,4 @@
 pixivpy
+Pybooru
 python-xmp-toolkit
 pyyaml

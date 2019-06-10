@@ -1,6 +1,7 @@
 import abc
 import yaml
 import logging
+import os
 
 class BaseFetcher(abc.ABC):
 
@@ -21,3 +22,8 @@ class BaseFetcher(abc.ABC):
     def log_warn(self, *messages):
         message = ''.join([str(x) for x in ([type(self).__name__, " - "] + list(messages))])
         logging.warning(message)
+
+    def file_extension_from_image_url(self, url):
+        url_basename = os.path.basename(url)
+        extension = os.path.splitext(url_basename)[1][1:]
+        return extension
