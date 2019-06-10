@@ -5,10 +5,12 @@ class IllustrationFile:
 
     xmp_key = "IllustrationIndexId"
 
-    def __init__(self, index_id, location, tags):
+    def __init__(self, index_id, location, source, source_id, tags):
         self.index_id = index_id
         self.location = location
         self.tags = tags
+        self.source = source
+        self.source_id = source_id
         self.file_index_id = None
 
     def add_image_tags(self, source, tag_map):

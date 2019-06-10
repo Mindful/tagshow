@@ -1,5 +1,6 @@
 import pickle
 import logging
+import os
 
 from . import illustration_file
 logging.basicConfig(level=logging.INFO, format='[%(asctime)s] %(levelname)s: %(message)s', datefmt='%I:%M:%H')
@@ -32,14 +33,38 @@ class Index:
             self.data = {self.next_available_id_key: 1}
             self.save()
 
-    def present_images(self):
-        pass
+    def _illustration_id_keys(self):
+        return [key for key in self.data.keys() if isinstance(key, int)]
 
-    def missing_images(self):
-        pass
+    def present_illustrations(self):
+        present_illustrations = []
+        for key in self._illustration_id_keys():
+            illustration = self.data[key]
+            present = os.path.isfile(illustration.location)
+            if present:
+                present_illustrations.append(illustration)
 
-    def healthy_images(self):
-        present_images = self.present_images()
+        return present_illustrations
+
+    def healthy_illustrations(self):
+        healthy_illustrations = []
+        present_illustrations = self.present_illustrations()
+        for illustration in present_illustrations:
+            healthy = True
+            try:
+                illustration.load_file_index_id()
+            except Exception:
+                healthy = False
+
+            healthy = (healthy and (illustration.index_id == illustration.file_index_id))
+            if (healthy):
+                healthy_illustrations.append(illustration)
+
+        return healthy_illustrations
+
+    def present_ids_for_source(self, source):
+        present_illustrations = self.present_illustrations()
+        return set([illustration.source_id for illustration in present_illustrations if illustration.source == source])
 
     def verify(self):
         pass #TODO: look at all the images in our index, make sure we can find them by name (if not, find all images we don't know about, check them for metadata)
@@ -68,7 +93,8 @@ class Index:
     def register_new_illustration_list(self, completed_downloads):
         id_iterator = iter(self._requisition_id_range(len(completed_downloads)))
         new_illustrations = [illustration_file.IllustrationFile(next(id_iterator), completed_download.name,
-                                    completed_download.tags) for completed_download in completed_downloads]
+                    completed_download.source, completed_download.id, completed_download.tags_for_index())
+                    for completed_download in completed_downloads]
 
         for illustration in new_illustrations:
             illustration.save_index_id_to_file()

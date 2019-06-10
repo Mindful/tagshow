@@ -1,4 +1,6 @@
 pixiv:
+  #Can be "individual", "skip", or "all"
+  process_multipage_illustrations: individual
   login: PII
   password: PII
 

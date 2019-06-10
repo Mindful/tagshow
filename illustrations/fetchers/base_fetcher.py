@@ -17,3 +17,7 @@ class BaseFetcher(abc.ABC):
     def log(self, *messages):
         message = ''.join([str(x) for x in ([type(self).__name__, " - "] + list(messages))])
         logging.info(message)
+
+    def log_warn(self, *messages):
+        message = ''.join([str(x) for x in ([type(self).__name__, " - "] + list(messages))])
+        logging.warning(message)
