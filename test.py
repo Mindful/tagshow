@@ -6,7 +6,7 @@ def test():
     indexx = index.Index.get_or_create_instance()
     indexx.cleanup()
     a = PixivFetcher()
-    b = a.fetch()
+    a.fetch(max_count=5)
 
     print(indexx.data)
 
@@ -16,7 +16,7 @@ def test_danbooru():
     indexx.cleanup()
 
     a = DanbooruFetcher()
-    print(a.fetch())
+    a.fetch(max_count=5)
     print(indexx.data)
 
 

@@ -6,5 +6,7 @@ pixiv:
 
 
 danbooru:
+  #List can be empty, or include "e", "q" and/or "s". See: https://danbooru.donmai.us/wiki_pages/43049
+  exclude_ratings: [e]
   login: PII
   api_key: PII

@@ -1,6 +1,7 @@
 from urllib.parse import urlparse, parse_qs
 from pixivpy3 import *
 from illustrations.fetchers.base_fetcher import BaseFetcher
+from illustrations.fetchers.fetcher_exception import FetcherException
 from illustrations.index import Index
 from illustrations.illustration_download import IllustrationDownload
 
@@ -43,7 +44,7 @@ class PixivFetcher(BaseFetcher):
                 self.next_max_bookmark_id = query_parameters['max_bookmark_id']
 
         def _get_user_bookmark_illusts_eng(self, user_id, max_bookmark_id):
-            #TODO: we'd rather just use api.user_bookmarks_illust but can't, see https://github.com/upbit/pixivpy/issues/76
+            #TODO: waiting for a relase that includes fixes from https://github.com/upbit/pixivpy/issues/76
             url = 'https://app-api.pixiv.net/v1/user/bookmarks/illust'
             params = {
                 'user_id': user_id,
@@ -68,7 +69,7 @@ class PixivFetcher(BaseFetcher):
 
         self.multipage_processing = config['process_multipage_illustrations']
         if self.multipage_processing not in PixivFetcher.MULTIPAGE_VALUES:
-            raise Exception("Bad config value for pixiv multipage proessing: "+self.multipage_processing)
+            raise FetcherException("Bad config value for pixiv multipage proessing: "+self.multipage_processing)
 
     def _collect_bookmarked_illustrations(self):
         self.log("Fetching list of bookmarks for user id ", self.user_id)
@@ -148,9 +149,11 @@ class PixivFetcher(BaseFetcher):
 
         self.index.register_new_illustration_list(completed_downloads)
 
-    def fetch(self):
+    def fetch(self, max_count=None):
         existing_ids = self.index.present_ids_for_source(PixivFetcher.SOURCE_NAME)
-        bookmarked_illustrations = self._collect_bookmarked_illustrations()[0:5]  # TODO: REMOVE THIS LIMIT OF FIVE
+        bookmarked_illustrations = self._collect_bookmarked_illustrations()
+        if max_count:
+            bookmarked_illustrations = bookmarked_illustrations[0:max_count]
 
         self.log("Found ", len(existing_ids), " illustrations already present from the same source")
         unprocessed_illustrations = [illustration for illustration in bookmarked_illustrations if illustration.id

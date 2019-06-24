@@ -8,7 +8,7 @@ class BaseFetcher(abc.ABC):
     CONFIG_FILE_NAME = "illustrations/fetchers/fetcher_config.yaml"
 
     @abc.abstractmethod
-    def fetch(self):
+    def fetch(self, max_count=None):
         pass
 
     def get_config(self):
