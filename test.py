@@ -22,5 +22,5 @@ def test_danbooru():
 
 
 if __name__ =='__main__':
-    #test_danbooru()
-    test_pixiv()
+    test_danbooru()
+    #test_pixiv()

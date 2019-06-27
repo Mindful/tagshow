@@ -52,6 +52,7 @@ class DanbooruFetcher(BaseFetcher):
             raise FetcherException("No images will be fetched if all three ratings are excluded")
 
         self.exclude_ratings = exclude_ratings
+        self.exclude_pixiv_collisions = config['exclude_pixiv_collisions']
 
     def _collect_bookmarked_posts(self):
             return list(self.TagQueryIterator(self.client, self._compute_search_string()))
@@ -70,7 +71,11 @@ class DanbooruFetcher(BaseFetcher):
             tag_list.append('rating:{}'.format(DanbooruFetcher.RATING_MAP[post['rating']]))
             extension = self.file_extension_from_image_url(post['file_url'])
 
-            target = IllustrationDownload(DanbooruFetcher.SOURCE_NAME, post['id'], post['file_url'], extension, tags=tag_list)
+            if post['pixiv_id']:
+                target = IllustrationDownload(DanbooruFetcher.SOURCE_NAME, post['id'], post['file_url'], extension,
+                                              tag_list, {'pixiv_id':post['pixiv_id']})
+            else:
+                target = IllustrationDownload(DanbooruFetcher.SOURCE_NAME, post['id'], post['file_url'], extension, tags=tag_list)
             download_targets.append(target)
 
         return download_targets
@@ -89,9 +94,28 @@ class DanbooruFetcher(BaseFetcher):
 
         self.index.register_new_illustration_list(completed_downloads)
 
+
+    def _compute_pixiv_collision_ids(self):
+        from illustrations.fetchers.pixiv_fetcher import PixivFetcher
+        pixiv_index_entries = self.index.get_illustrations_by_source(PixivFetcher.SOURCE_NAME)
+        return [x.source_id for x in pixiv_index_entries]
+
     def fetch(self, max_count=None):
         existing_ids = self.index.present_ids_for_source(DanbooruFetcher.SOURCE_NAME)
         bookmarked_posts = self._collect_bookmarked_posts()
+        bad_results = [x for x in bookmarked_posts if x is None]
+        if len(bad_results) > 0:
+            self.log("Discarding ", len(bad_results), " removed or otherwise unretrievable results")
+            bookmarked_posts = [x for x in bookmarked_posts if x is not None]
+
+        if self.exclude_pixiv_collisions:
+            possible_collision_ids = self._compute_pixiv_collision_ids()
+            collisions = [x for x in bookmarked_posts if x['pixiv_id'] in possible_collision_ids]
+            if len(collisions) > 0:
+                self.log("Excluding ", len(collisions), " collisions with Pixiv images in accordance with config")
+                bookmarked_posts = [x for x in bookmarked_posts if x in collisions]
+
+
         if max_count:
             bookmarked_posts = bookmarked_posts[0:max_count]
 

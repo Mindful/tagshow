@@ -106,3 +106,7 @@ class Index:
 
         return illustrations
 
+    def get_illustrations_by_source(self, source):
+        illustrations = self.get_all_illustrations()
+        return [x for x in illustrations if x.source == source]
+

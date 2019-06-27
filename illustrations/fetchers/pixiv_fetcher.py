@@ -72,6 +72,7 @@ class PixivFetcher(BaseFetcher):
             raise FetcherException("Bad config value for pixiv multipage proessing: "+self.multipage_processing)
 
         self.exclude_adult = config['exclude_adult']
+        self.exclude_danbooru_collisions = config['exclude_danbooru_collisions']
 
     def _collect_bookmarked_illustrations(self):
         self.log("Fetching list of bookmarks for user id ", self.user_id)
@@ -151,6 +152,13 @@ class PixivFetcher(BaseFetcher):
 
         self.index.register_new_illustration_list(completed_downloads)
 
+
+    def _compute_danbooru_collision_ids(self):
+        from illustrations.fetchers.danbooru_fetcher import DanbooruFetcher
+        danbooru_index_entries = self.index.get_illustrations_by_source(DanbooruFetcher.SOURCE_NAME)
+        return [x.tags['download_metadata']['pixiv_id'] for x in danbooru_index_entries if 'download_metadata' in x.tags
+                and 'pixiv_id' in x.tags['download_metadata']]
+
     def fetch(self, max_count=None):
         existing_ids = self.index.present_ids_for_source(PixivFetcher.SOURCE_NAME)
         bookmarked_illustrations = self._collect_bookmarked_illustrations()
@@ -164,6 +172,13 @@ class PixivFetcher(BaseFetcher):
             if len(adult_illustrations) > 0:
                 self.log("Excluding ", len(adult_illustrations), " adult illustrations in accordance with config")
                 bookmarked_illustrations = [x for x in bookmarked_illustrations if x not in adult_illustrations]
+
+        if self.exclude_danbooru_collisions:
+            possible_collision_ids = self._compute_danbooru_collision_ids()
+            collisions = [x for x in bookmarked_illustrations if x['id'] in possible_collision_ids]
+            if len(collisions) > 0:
+                self.log("Excluding ", len(collisions), " collisions with Danbooru images in accordance with config")
+                bookmarked_illustrations = [x for x in bookmarked_illustrations if x not in collisions]
 
         if max_count:
             bookmarked_illustrations = bookmarked_illustrations[0:max_count]
