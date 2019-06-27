@@ -71,6 +71,8 @@ class PixivFetcher(BaseFetcher):
         if self.multipage_processing not in PixivFetcher.MULTIPAGE_VALUES:
             raise FetcherException("Bad config value for pixiv multipage proessing: "+self.multipage_processing)
 
+        self.exclude_adult = config['exclude_adult']
+
     def _collect_bookmarked_illustrations(self):
         self.log("Fetching list of bookmarks for user id ", self.user_id)
         bookmarks_iterator = self.BookmarksIterator(self.app_api, self.user_id)
@@ -118,7 +120,7 @@ class PixivFetcher(BaseFetcher):
                 page_number_string = input()
                 try:
                     result = []
-                    page_numbers = [int(num.strip()) for num in page_number_string.split(',')]
+                    page_numbers = {max(int(num.strip()), 1) for num in page_number_string.split(',')}
                     for num in page_numbers:
                         result.append((illustration.meta_pages[num-1], num))
                     self.log("These pages will be downloaded for illustration ", illustration.id, ": ", page_numbers)
@@ -152,6 +154,17 @@ class PixivFetcher(BaseFetcher):
     def fetch(self, max_count=None):
         existing_ids = self.index.present_ids_for_source(PixivFetcher.SOURCE_NAME)
         bookmarked_illustrations = self._collect_bookmarked_illustrations()
+        restricted_illustrations = [x for x in bookmarked_illustrations if x.restrict]
+        if len(restricted_illustrations) > 0:
+            self.log("Excluding ", len(restricted_illustrations), " marked private or otherwise made unavailable")
+            bookmarked_illustrations = [x for x in bookmarked_illustrations if x not in restricted_illustrations]
+
+        if self.exclude_adult:
+            adult_illustrations = [x for x in bookmarked_illustrations if x.x_restrict]
+            if len(adult_illustrations) > 0:
+                self.log("Excluding ", len(adult_illustrations), " adult illustrations in accordance with config")
+                bookmarked_illustrations = [x for x in bookmarked_illustrations if x not in adult_illustrations]
+
         if max_count:
             bookmarked_illustrations = bookmarked_illustrations[0:max_count]
 

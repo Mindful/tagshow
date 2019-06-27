@@ -2,7 +2,7 @@ from illustrations.fetchers.pixiv_fetcher import PixivFetcher
 from illustrations.fetchers.danbooru_fetcher import DanbooruFetcher
 from illustrations import index
 
-def test():
+def test_pixiv():
     indexx = index.Index.get_or_create_instance()
     indexx.cleanup()
     a = PixivFetcher()
@@ -22,4 +22,5 @@ def test_danbooru():
 
 
 if __name__ =='__main__':
-    test_danbooru()
+    #test_danbooru()
+    test_pixiv()

@@ -3,6 +3,8 @@ pixiv:
   process_multipage_illustrations: individual
   login: PII
   password: PII
+  exclude_adult: true
+  exclude_danbooru_collisions: true
 
 
 danbooru:
@@ -10,3 +12,4 @@ danbooru:
   exclude_ratings: [e]
   login: PII
   api_key: PII
+  exclude_pixiv_collisions: true
