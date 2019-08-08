@@ -47,3 +47,10 @@ class IllustrationFile:
         else:
             xmp_file.close_file()
             raise Exception("Could not write index id to file for {}".format(self))
+
+
+    def get_tags(self, exclude_sources = []):
+        result = set()
+        for source in self.tags:
+            if source not in exclude_sources:
+                

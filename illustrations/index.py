@@ -110,3 +110,10 @@ class Index:
         illustrations = self.get_all_illustrations()
         return [x for x in illustrations if x.source == source]
 
+
+    def get_illustrations_including_any_tags(self, tag_list):
+        illustrations = self.get_all_illustrations()
+        return [x for x in illustrations if x]
+
+    def get_illustrations_including_all_tags(self, tag_list):
+
