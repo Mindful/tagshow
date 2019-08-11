@@ -86,17 +86,18 @@ class PixivFetcher(BaseFetcher):
         download_targets = []
         for illustration in illustrations:
             tags = [tag['translated_name'] if tag['translated_name'] else tag['name'] for tag in illustration.tags]
+            explicitness_level = 2 if illustration.x_restrict else 0
 
             if illustration['page_count'] > 1:
                 for page_tuple in self._compute_acceptable_pages_for_illust(illustration):
                     image_url = page_tuple[0]['image_urls']['original']
                     page_number = page_tuple[1]
-                    target = self._construct_download_target(image_url, illustration.id, tags, page_number)
+                    target = self._construct_download_target(image_url, illustration.id, tags, explicitness_level, page_number)
                     download_targets.append(target)
 
             else:
                 image_url = illustration.meta_single_page.get('original_image_url', illustration.image_urls.large)
-                target = self._construct_download_target(image_url, illustration.id, tags)
+                target = self._construct_download_target(image_url, illustration.id, tags, explicitness_level)
                 download_targets.append(target)
 
         return download_targets
@@ -131,15 +132,18 @@ class PixivFetcher(BaseFetcher):
                     self.log_warn("Could not process these page numbers due to ", e)
                     self.log("Please enter a single integer, or sequence of integers separated by commas like \"1,2,3\"")
 
-    def _construct_download_target(self, url, illust_id, tags, page_number=None):
+    def _construct_download_target(self, url, illust_id, tags, explicitness_level, page_number=None):
         extension = self.file_extension_from_image_url(url)
+
+        metadata = {BaseFetcher.EXPLICITNESS_LEVEL:str(explicitness_level)}
 
         if page_number:
             name = 'pixiv_{}_p{}.{}'.format(str(illust_id), page_number, extension)
+            metadata[BaseFetcher.PAGE_NUMBER] = page_number
             download_target = IllustrationDownload(PixivFetcher.SOURCE_NAME, illust_id, url, extension, tags,
-                                                           metadata={'page':page_number}, name=name)
+                                                           metadata=metadata, name=name)
         else:
-            download_target = IllustrationDownload(PixivFetcher.SOURCE_NAME, illust_id, url, extension, tags)
+            download_target = IllustrationDownload(PixivFetcher.SOURCE_NAME, illust_id, url, extension, tags, metadata)
 
         return download_target
 
@@ -156,8 +160,8 @@ class PixivFetcher(BaseFetcher):
     def _compute_danbooru_collision_ids(self):
         from illustrations.fetchers.danbooru_fetcher import DanbooruFetcher
         danbooru_index_entries = self.index.get_illustrations_by_source(DanbooruFetcher.SOURCE_NAME)
-        return [x.tags['download_metadata']['pixiv_id'] for x in danbooru_index_entries if 'download_metadata' in x.tags
-                and 'pixiv_id' in x.tags['download_metadata']]
+        return [x.tags[IllustrationDownload.METADATA_KEY][[BaseFetcher.PIXIV_ID]] for x in danbooru_index_entries
+                if IllustrationDownload.METADATA_KEY in x.tags and [BaseFetcher.PIXIV_ID] in x.tags[IllustrationDownload.METADATA_KEY]]
 
     def fetch(self, max_count=None):
         existing_ids = self.index.present_ids_for_source(PixivFetcher.SOURCE_NAME)

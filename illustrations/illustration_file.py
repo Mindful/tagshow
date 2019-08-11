@@ -1,17 +1,19 @@
 from libxmp import XMPFiles, consts, XMPError, XMPMeta
+from .illustration_download import IllustrationDownload
 
 
 class IllustrationFile:
 
     xmp_key = "IllustrationIndexId"
 
-    def __init__(self, index_id, location, source, source_id, tags):
+    def __init__(self, index_id, location, source, source_id, tags, metadata):
         self.index_id = index_id
         self.location = location
         self.tags = tags
         self.source = source
         self.source_id = source_id
         self.file_index_id = None
+        self.metadata = metadata
 
     def add_image_tags(self, source, tag_map):
         pass
@@ -48,9 +50,13 @@ class IllustrationFile:
             xmp_file.close_file()
             raise Exception("Could not write index id to file for {}".format(self))
 
-
     def get_tags(self, exclude_sources = []):
         result = set()
-        for source in self.tags:
-            if source not in exclude_sources:
-                
+        acceptable_sources = [source for source in self.tags if source not in exclude_sources]
+        for source in acceptable_sources:
+            tags = self.tags[source]
+            result |= tags
+
+        return result
+
+

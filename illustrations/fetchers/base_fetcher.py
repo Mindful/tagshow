@@ -8,6 +8,10 @@ class BaseFetcher(abc.ABC, NamedLogger):
 
     CONFIG_FILE_NAME = "illustrations/fetchers/fetcher_config.yaml"
 
+    PIXIV_ID = 'pixiv_id'
+    EXPLICITNESS_LEVEL = 'explicitness'
+    PAGE_NUMBER = 'page'
+
     @abc.abstractmethod
     def fetch(self, max_count=None):
         pass

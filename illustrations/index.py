@@ -87,8 +87,8 @@ class Index:
     def register_new_illustration_list(self, completed_downloads):
         id_iterator = iter(self._requisition_id_range(len(completed_downloads)))
         new_illustrations = [illustration_file.IllustrationFile(next(id_iterator), completed_download.name,
-                    completed_download.source, completed_download.id, completed_download.tags_for_index())
-                    for completed_download in completed_downloads]
+                    completed_download.source, completed_download.id, completed_download.tags_for_index(),
+                    completed_download.metadata) for completed_download in completed_downloads]
 
         for illustration in new_illustrations:
             illustration.save_index_id_to_file()
@@ -116,4 +116,4 @@ class Index:
         return [x for x in illustrations if x]
 
     def get_illustrations_including_all_tags(self, tag_list):
-
+        pass

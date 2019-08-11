@@ -71,11 +71,11 @@ class DanbooruFetcher(BaseFetcher):
             tag_list.append('rating:{}'.format(DanbooruFetcher.RATING_MAP[post['rating']]))
             extension = self.file_extension_from_image_url(post['file_url'])
 
-            if post['pixiv_id']:
+            if post[BaseFetcher.PIXIV_ID]:
                 target = IllustrationDownload(DanbooruFetcher.SOURCE_NAME, post['id'], post['file_url'], extension,
-                                              tag_list, {'pixiv_id':post['pixiv_id']})
+                                              tag_list, {[BaseFetcher.PIXIV_ID]:post['pixiv_id']})
             else:
-                target = IllustrationDownload(DanbooruFetcher.SOURCE_NAME, post['id'], post['file_url'], extension, tags=tag_list)
+                target = IllustrationDownload(DanbooruFetcher.SOURCE_NAME, post['id'], post['file_url'], extension, tag_list)
             download_targets.append(target)
 
         return download_targets
@@ -110,7 +110,7 @@ class DanbooruFetcher(BaseFetcher):
 
         if self.exclude_pixiv_collisions:
             possible_collision_ids = self._compute_pixiv_collision_ids()
-            collisions = [x for x in bookmarked_posts if x['pixiv_id'] in possible_collision_ids]
+            collisions = [x for x in bookmarked_posts if x[[BaseFetcher.PIXIV_ID]] in possible_collision_ids]
             if len(collisions) > 0:
                 self.log("Excluding ", len(collisions), " collisions with Pixiv images in accordance with config")
                 bookmarked_posts = [x for x in bookmarked_posts if x in collisions]
