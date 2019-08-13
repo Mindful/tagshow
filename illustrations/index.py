@@ -1,6 +1,7 @@
 import pickle
 import logging
 import os
+import yaql
 
 from . import illustration_file
 logging.basicConfig(level=logging.INFO, format='[%(asctime)s] %(levelname)s: %(message)s', datefmt='%I:%M:%H')
@@ -22,6 +23,8 @@ class Index:
     def __init__(self):
         if Index.instance is not None:
             raise Exception("There should only be one instance of Index. Please use get_instance()")
+
+        self.yaql_engine = yaql.factory.YaqlFactory().create()
 
         self._load()
 
@@ -107,15 +110,9 @@ class Index:
         return illustrations
 
     def get_illustrations_by_source(self, source):
-        illustrations = self.get_all_illustrations()
-        return [x for x in illustrations if x.source == source]
+        return self.yaql_query(f'$.where($.source = {source})')
 
-    def get_illustrations_including_any_tags(self, tag_list, exclude_tag_sources=[]):
-        tag_set = set(tag_list)
-        illustrations = self.get_all_illustrations()
-        return [x for x in illustrations if len(tag_set.intersection(x.get_tag_set(exclude_tag_sources))) > 0]
+    def yaql_query(self, query):
+        return self.yaql_engine(query).evaluate(data=self.get_all_illustrations())
 
-    def get_illustrations_including_all_tags(self, tag_list, exclude_tag_sources=[]):
-        tag_set = set(tag_list)
-        illustrations = self.get_all_illustrations()
-        return [x for x in illustrations if tag_set.issubset(x.get_tag_set(exclude_tag_sources))]
+

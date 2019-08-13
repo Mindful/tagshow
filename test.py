@@ -1,6 +1,7 @@
 from illustrations.fetchers.pixiv_fetcher import PixivFetcher
 from illustrations.fetchers.danbooru_fetcher import DanbooruFetcher
 from illustrations import index
+from slideshow.slideshow import Slideshow
 
 def test_pixiv():
     indexx = index.Index.get_or_create_instance()
@@ -35,8 +36,11 @@ def test_all():
     print(indexx.data)
 
 
-def search_test():
-    pass
+def slideshow_test():
+    indexx = index.Index.get_or_create_instance()
+    indexx.cleanup()
+    show = Slideshow('test_show.txt')
+    show.write_slideshow()
 
 
 
@@ -44,6 +48,7 @@ def search_test():
 
 
 if __name__ =='__main__':
+    slideshow_test()
     #test_danbooru()
     #test_pixiv()
-    test_all()
+    #test_all()
