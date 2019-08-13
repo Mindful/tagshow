@@ -1,3 +1,6 @@
+import os
+from .index import Index
+
 
 class IllustrationDownload:
 
@@ -8,6 +11,8 @@ class IllustrationDownload:
             self.name = name
         else:
             self.name = '{}_{}.{}'.format(source, str(source_id), file_extension)
+
+        self.location = os.path.join(Index.illustration_directory, self.name)
 
         self.source = source
         self.id = source_id

@@ -94,7 +94,7 @@ class DanbooruFetcher(BaseFetcher):
             opener = urllib.request.build_opener()
             opener.addheaders = [('User-Agent', 'Python Tagshow')] #Danbooru blocks default urllib user agent
             urllib.request.install_opener(opener)
-            urllib.request.urlretrieve(target.url, target.name)
+            urllib.request.urlretrieve(target.url, target.location)
 
             completed_downloads.append(target)
 

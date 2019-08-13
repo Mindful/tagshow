@@ -11,6 +11,7 @@ class Index:
     index_file_name = 'index_data.pickle'
     next_available_id_key = '_next_id'
     instance = None
+    illustration_directory = 'illustration_folder'
 
     @staticmethod
     def get_or_create_instance():
@@ -24,8 +25,10 @@ class Index:
         if Index.instance is not None:
             raise Exception("There should only be one instance of Index. Please use get_instance()")
 
-        self.yaql_engine = yaql.factory.YaqlFactory().create()
+        if not os.path.exists(Index.illustration_directory):
+            os.mkdir(Index.illustration_directory)
 
+        self.yaql_engine = yaql.factory.YaqlFactory().create()
         self._load()
 
     def _load(self):
@@ -89,9 +92,8 @@ class Index:
 
     def register_new_illustration_list(self, completed_downloads):
         id_iterator = iter(self._requisition_id_range(len(completed_downloads)))
-        new_illustrations = [illustration_file.IllustrationFile(next(id_iterator), completed_download.name,
-                    completed_download.source, completed_download.id, completed_download.tags_for_index(),
-                    completed_download.metadata) for completed_download in completed_downloads]
+        new_illustrations = [illustration_file.IllustrationFile.from_download(next(id_iterator), completed_download)
+                                     for completed_download in completed_downloads]
 
         for illustration in new_illustrations:
             illustration.save_index_id_to_file()

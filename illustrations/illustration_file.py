@@ -7,7 +7,7 @@ class IllustrationFile:
 
     xmp_key = "IllustrationIndexId"
 
-    def __init__(self, index_id, location, source, source_id, tags, metadata):
+    def __init__(self, index_id, location, source, source_id, tags, metadata, name):
         self.index_id = index_id
         self.location = location
         self.tags = tags
@@ -15,6 +15,14 @@ class IllustrationFile:
         self.source_id = source_id
         self.file_index_id = None
         self.metadata = metadata
+        self.name = name
+
+    @staticmethod
+    def from_download(index_id, completed_download):
+        return IllustrationFile(index_id, completed_download.location, completed_download.source, completed_download.id,
+                                completed_download.tags_for_index(), completed_download.metadata, completed_download.name)
+
+
 
     def add_image_tags(self, source, tag_map):
         pass

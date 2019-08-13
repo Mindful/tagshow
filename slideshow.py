@@ -28,6 +28,8 @@ class Slideshow(NamedLogger):
             for illustration in illustrations:
                 copyfile(illustration.location, os.path.join(output_dir_name, illustration.location))
 
+            self.log("Finished writing slideshow")
+
 
 
 

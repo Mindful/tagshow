@@ -1,6 +1,7 @@
 import abc
 import yaml
 import os
+from ..index import Index
 from common.named_logger import NamedLogger
 
 

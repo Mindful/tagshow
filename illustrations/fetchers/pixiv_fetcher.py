@@ -141,7 +141,7 @@ class PixivFetcher(BaseFetcher):
             name = 'pixiv_{}_p{}.{}'.format(str(illust_id), page_number, extension)
             metadata[BaseFetcher.PAGE_NUMBER] = page_number
             download_target = IllustrationDownload(PixivFetcher.SOURCE_NAME, illust_id, url, extension, tags,
-                                                           metadata=metadata, name=name)
+                                                   metadata=metadata, location=name)
         else:
             download_target = IllustrationDownload(PixivFetcher.SOURCE_NAME, illust_id, url, extension, tags, metadata)
 
@@ -151,7 +151,7 @@ class PixivFetcher(BaseFetcher):
         completed_downloads = []
         for target in download_targets:
             self.log("Downloading ", target)
-            self.app_api.download(url=target.url, name=target.name)
+            self.app_api.download(url=target.url, name=target.location)
             completed_downloads.append(target)
 
         self.index.register_new_illustration_list(completed_downloads)
