@@ -8,10 +8,19 @@ class SlideshowConfig(NamedLogger):
 
     INCLUDE_ILLUSTRATIONS = 'include_illustrations'
     EXCLUDE_ILLUSTRATIONS = 'exclude_illustrations'
+    #WHERE ID
+
     INCLUDE_TAGS = 'include_tags'
     REQUIRED_TAGS = 'required_tags'
     EXCLUDE_TAGS = 'exclude_tags'
+    #INCL TAGS, NOT INCL TAGS, INCL ANY TAGS?
+
     EXCLUDE_TAG_SOURCES = 'exclude_tag_sources'
+    #WILL PROBABLY REQUIRE SOME WORKING ON
+
+    EXPLICITNESS_MAX = 'explicitness_max'
+    EXPLICITNESS_MIN = 'explicitness_min'
+    #EXPLICITNESS < or > NUMBER
 
     RECOGNIZED_CONFIGS = [INCLUDE_ILLUSTRATIONS, EXCLUDE_ILLUSTRATIONS, INCLUDE_TAGS, EXCLUDE_TAGS, EXCLUDE_TAG_SOURCES,
                           REQUIRED_TAGS]

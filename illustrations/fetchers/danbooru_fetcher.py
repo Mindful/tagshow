@@ -9,6 +9,7 @@ class DanbooruFetcher(BaseFetcher):
 
     SOURCE_NAME = 'danbooru'
     RATING_MAP = {'e':'explicit', 'q':'questionable', 's':'safe'}
+    RATING_TO_EXPLICITNESS_LEVEL_MAP = {'e':2,'q':1, 's':0 }
 
     class TagQueryIterator:
 
@@ -68,14 +69,19 @@ class DanbooruFetcher(BaseFetcher):
         download_targets = []
         for post in bookmarked_posts:
             tag_list = post['tag_string_general'].split(' ')
-            tag_list.append('rating:{}'.format(DanbooruFetcher.RATING_MAP[post['rating']]))
+            post_rating = post['rating']
+            tag_list.append('rating:{}'.format(DanbooruFetcher.RATING_MAP[post_rating]))
+
+            metadata = {BaseFetcher.EXPLICITNESS_LEVEL: str(DanbooruFetcher.RATING_TO_EXPLICITNESS_LEVEL_MAP[post_rating])}
             extension = self.file_extension_from_image_url(post['file_url'])
 
             if post[BaseFetcher.PIXIV_ID]:
+                metadata[BaseFetcher.PIXIV_ID] = post['pixiv_id']
                 target = IllustrationDownload(DanbooruFetcher.SOURCE_NAME, post['id'], post['file_url'], extension,
-                                              tag_list, {[BaseFetcher.PIXIV_ID]:post['pixiv_id']})
+                                              tag_list, metadata)
             else:
-                target = IllustrationDownload(DanbooruFetcher.SOURCE_NAME, post['id'], post['file_url'], extension, tag_list)
+                target = IllustrationDownload(DanbooruFetcher.SOURCE_NAME, post['id'], post['file_url'], extension,
+                                              tag_list, metadata)
             download_targets.append(target)
 
         return download_targets
@@ -110,11 +116,10 @@ class DanbooruFetcher(BaseFetcher):
 
         if self.exclude_pixiv_collisions:
             possible_collision_ids = self._compute_pixiv_collision_ids()
-            collisions = [x for x in bookmarked_posts if x[[BaseFetcher.PIXIV_ID]] in possible_collision_ids]
+            collisions = [x for x in bookmarked_posts if x[BaseFetcher.PIXIV_ID] in possible_collision_ids]
             if len(collisions) > 0:
                 self.log("Excluding ", len(collisions), " collisions with Pixiv images in accordance with config")
                 bookmarked_posts = [x for x in bookmarked_posts if x in collisions]
-
 
         if max_count:
             bookmarked_posts = bookmarked_posts[0:max_count]

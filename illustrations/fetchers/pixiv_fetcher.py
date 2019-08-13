@@ -135,7 +135,7 @@ class PixivFetcher(BaseFetcher):
     def _construct_download_target(self, url, illust_id, tags, explicitness_level, page_number=None):
         extension = self.file_extension_from_image_url(url)
 
-        metadata = {BaseFetcher.EXPLICITNESS_LEVEL:str(explicitness_level)}
+        metadata = {BaseFetcher.EXPLICITNESS_LEVEL: str(explicitness_level)}
 
         if page_number:
             name = 'pixiv_{}_p{}.{}'.format(str(illust_id), page_number, extension)

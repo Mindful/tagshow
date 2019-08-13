@@ -14,7 +14,7 @@ def test_pixiv():
 def test_danbooru():
     indexx = index.Index.get_or_create_instance()
     indexx.cleanup()
-    print(indexx.get_all_illustrations()[0].get_tags())
+    print(indexx.get_all_illustrations()[0].get_tag_set())
     print(indexx.data)
 
     a = DanbooruFetcher()
@@ -25,12 +25,18 @@ def test_danbooru():
 def test_all():
     indexx = index.Index.get_or_create_instance()
     indexx.cleanup()
+
     a = PixivFetcher()
     a.fetch(max_count=5)
+    print(indexx.data)
 
     a = DanbooruFetcher()
     a.fetch(max_count=5)
     print(indexx.data)
+
+
+def search_test():
+    pass
 
 
 
@@ -38,5 +44,6 @@ def test_all():
 
 
 if __name__ =='__main__':
-    test_danbooru()
+    #test_danbooru()
     #test_pixiv()
+    test_all()

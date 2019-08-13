@@ -110,10 +110,12 @@ class Index:
         illustrations = self.get_all_illustrations()
         return [x for x in illustrations if x.source == source]
 
-
-    def get_illustrations_including_any_tags(self, tag_list):
+    def get_illustrations_including_any_tags(self, tag_list, exclude_tag_sources=[]):
+        tag_set = set(tag_list)
         illustrations = self.get_all_illustrations()
-        return [x for x in illustrations if x]
+        return [x for x in illustrations if len(tag_set.intersection(x.get_tag_set(exclude_tag_sources))) > 0]
 
-    def get_illustrations_including_all_tags(self, tag_list):
-        pass
+    def get_illustrations_including_all_tags(self, tag_list, exclude_tag_sources=[]):
+        tag_set = set(tag_list)
+        illustrations = self.get_all_illustrations()
+        return [x for x in illustrations if tag_set.issubset(x.get_tag_set(exclude_tag_sources))]
