@@ -1,0 +1,1 @@
+$.where($.has_tag('red_hair') or $.has_tag('maid'))

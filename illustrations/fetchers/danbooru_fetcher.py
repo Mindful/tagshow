@@ -72,7 +72,7 @@ class DanbooruFetcher(BaseFetcher):
             post_rating = post['rating']
             tag_list.append('rating:{}'.format(DanbooruFetcher.RATING_MAP[post_rating]))
 
-            metadata = {BaseFetcher.EXPLICITNESS_LEVEL: str(DanbooruFetcher.RATING_TO_EXPLICITNESS_LEVEL_MAP[post_rating])}
+            metadata = {BaseFetcher.EXPLICITNESS_LEVEL: int(DanbooruFetcher.RATING_TO_EXPLICITNESS_LEVEL_MAP[post_rating])}
             extension = self.file_extension_from_image_url(post['file_url'])
 
             if post[BaseFetcher.PIXIV_ID]:

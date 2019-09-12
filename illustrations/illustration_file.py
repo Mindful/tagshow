@@ -63,9 +63,13 @@ class IllustrationFile:
         result = set()
         acceptable_sources = [source for source in self.tags if source not in exclude_sources]
         for source in acceptable_sources:
-            tags = self.tags[source]
+            tags = set(self.tags[source])
             result |= tags
 
         return result
+
+    def has_tag(self, tag):
+        all_tags = self.get_tag_set()
+        return tag in all_tags
 
 

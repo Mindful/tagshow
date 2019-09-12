@@ -1,0 +1,1 @@
+$.where($.has_tag('blue_eyes') and $.metadata['explicitness'] = 0)
