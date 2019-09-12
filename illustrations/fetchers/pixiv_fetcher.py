@@ -34,7 +34,7 @@ class PixivFetcher(BaseFetcher):
                 self._next_bookmark_page()
 
         def _next_bookmark_page(self):
-            bookmarks_response = self._get_user_bookmark_illusts_eng(self.user_id, self.next_max_bookmark_id)
+            bookmarks_response = self.api.user_bookmarks_illust(self.user_id, max_bookmark_id=self.next_max_bookmark_id)
             self.illusts_current_page = bookmarks_response['illusts']
             next_page_url = bookmarks_response['next_url']
             if next_page_url is None:
@@ -43,22 +43,10 @@ class PixivFetcher(BaseFetcher):
                 query_parameters = parse_qs(urlparse(next_page_url).query)
                 self.next_max_bookmark_id = query_parameters['max_bookmark_id']
 
-        def _get_user_bookmark_illusts_eng(self, user_id, max_bookmark_id):
-            #TODO: waiting for a relase that includes fixes from https://github.com/upbit/pixivpy/issues/76
-            url = 'https://app-api.pixiv.net/v1/user/bookmarks/illust'
-            params = {
-                'user_id': user_id,
-                'restrict': 'public',
-                'filter': 'for_ios',
-                'max_bookmark_id': max_bookmark_id
-            }
-            r = self.api.no_auth_requests_call('GET', url, params=params, req_auth=True,
-                                               headers={'Accept-Language':'en-US'})
-            return self.api.parse_result(r)
-
     def __init__(self):
         self.index = Index.get_or_create_instance()
         self.app_api = AppPixivAPI()
+        self.app_api.set_additional_headers({'Accept-Language':'en-US'}) #https://github.com/upbit/pixivpy/issues/76
         config = self.get_config()[PixivFetcher.SOURCE_NAME]
 
         conf_login = config['login']
@@ -140,8 +128,8 @@ class PixivFetcher(BaseFetcher):
         if page_number:
             name = 'pixiv_{}_p{}.{}'.format(str(illust_id), page_number, extension)
             metadata[BaseFetcher.PAGE_NUMBER] = page_number
-            download_target = IllustrationDownload(PixivFetcher.SOURCE_NAME, illust_id, url, extension, tags,
-                                                   metadata=metadata, location=name)
+            download_target = IllustrationDownload(PixivFetcher.SOURCE_NAME, illust_id, url, extension, tags, metadata,
+                                                   name)
         else:
             download_target = IllustrationDownload(PixivFetcher.SOURCE_NAME, illust_id, url, extension, tags, metadata)
 
