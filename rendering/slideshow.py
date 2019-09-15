@@ -2,6 +2,7 @@ from common.named_logger import NamedLogger
 from illustrations.index import Index
 import os
 from shutil import copyfile
+from .display_writer import DisplayWriter
 
 
 class Slideshow(NamedLogger):
@@ -38,9 +39,14 @@ class Slideshow(NamedLogger):
             else:
                 self.log("Creating output directory ", output_dir_name)
                 os.mkdir(output_dir_name)
+                output_illustrations = []
                 for illustration in illustrations:
-                    copyfile(illustration.location, os.path.join(output_dir_name, os.path.split(illustration.location)[1]))
+                    illustration_target = os.path.split(illustration.location)[1]
+                    copyfile(illustration.location, os.path.join(output_dir_name, illustration_target))
+                    output_illustrations.append(illustration_target)
 
+                self.log("Writing html...")
+                DisplayWriter(output_illustrations).write(output_dir_name)
                 self.log("Finished writing slideshow")
 
 

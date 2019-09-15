@@ -1,7 +1,8 @@
 #!/usr/bin/python
 
 import sys
-from slideshow import Slideshow
+
+from rendering.slideshow import Slideshow
 
 
 def main():
