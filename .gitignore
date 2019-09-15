@@ -6,3 +6,5 @@ images
 *.pyc
 index_data.pickle
 .DS_Store
+rendering_resources/galleria*
+rendering_resources/jquery*
