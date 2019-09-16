@@ -2,11 +2,12 @@ import pickle
 import logging
 import os
 import yaql
+from common.named_logger import NamedLogger
 
 from . import illustration_file
 
 
-class Index:
+class Index(NamedLogger):
     index_file_name = 'index_data.pickle'
     next_available_id_key = '_next_id'
     instance = None
@@ -56,19 +57,20 @@ class Index:
         return set([illustration.source_id for illustration in present_illustrations if illustration.source == source])
 
     def cleanup(self):
-        logging.info("Running index cleanup...")
+        self.log("Running index cleanup...")
         all_illustrations = self.get_all_illustrations()
         present_illustrations = self.present_illustrations()
 
         missing_illustrations = set(all_illustrations) - set(present_illustrations)
         for illustration in missing_illustrations:
-            logging.warning("Unable to find illustration " + str(illustration) +
-                            ", so it will be deleted from the index.")
+            self.log_warn("Unable to find illustration ", str(illustration), ", so it will be deleted from the index.")
             del self.data[illustration.index_id]
 
         self.save()
 
     def save(self):
+        self.log("Saving below index data...")
+        self.log(self.data)
         with open(self.index_file_name, 'wb') as data_file:
             pickle.dump(self.data, data_file)
 

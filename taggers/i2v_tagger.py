@@ -5,13 +5,12 @@ import os
 
 from PIL import Image
 
-from common.named_logger import NamedLogger
+from taggers.base_tagger import BaseTagger
 
 
-class I2VTagger(NamedLogger):
+class I2VTagger(BaseTagger):
 
-
-    models_downloaded = False
+    SOURCE_NAME = 'illust2vec'
 
     model_file_list = ['https://github.com/rezoo/illustration2vec/releases/download/v2.0.0/tag_list.json.gz',
                   'https://github.com/rezoo/illustration2vec/releases/download/v2.0.0/illust2vec_tag.prototxt',
@@ -40,8 +39,14 @@ class I2VTagger(NamedLogger):
             with open('tag_list.json', 'wb') as f_out:
                 shutil.copyfileobj(f_in, f_out)
 
-    def image_tags(self, image):
-        img = Image.open(image)
-        return self.illust2vec.estimate_plausible_tags([img], threshold=0.5)
+    def compute_tags(self, illustration):
+        img = Image.open(illustration.location)
+        results = self.illust2vec.estimate_plausible_tags([img], threshold=0.5)[0]
+        output_tags = [tag_tuple[0] for tag_tuple in results['general']]
+        rating = max(results['rating'], key=lambda x: x[1])[0]
+        output_tags.append('rating:'+rating)
+        output_tags.extend(results['character'])
+
+        return output_tags
 
 
