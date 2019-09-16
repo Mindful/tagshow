@@ -26,3 +26,66 @@ selecting the images you'd like as part of your slideshow. There are two
 examples included to help you get started. 
 4. Run `create_slideshow.py` with your yaql query text file as an argument. The output will be a directory including a html file you can open to view
 the actual slideshow. 
+
+Taggers
+--
+If you'd like to increase the number of tags available on your images, you can
+use the included taggers. These can be run via `tag_illustrations.py` with 
+`i2v`, `danbooru` or `all` as an argument. 
+
+The `danbooru` tagger works out of the box, and will search Danbooru for
+any images you have downloaded from Pixiv and then update those images with the 
+Danbooru tags. In sort, this tagger will add Danbooru tags to your Pixiv images. 
+
+The `i2v_tagger` is slightly more complicated. It uses [Illustration2Vec](https://github.com/rezoo/illustration2vec)
+to assign tags to any images you have downloaded and indexed through TagShow, but
+it has some dependencies.
+1. It requires all of the Illustration2Vec dependencies. It's generally safe to just
+use their [requirements.txt](https://github.com/rezoo/illustration2vec/blob/master/requirements.txt) file.
+2. It requires that the [i2v](https://github.com/rezoo/illustration2vec/tree/master/i2v) directory
+from Illustration2Vec be copied to the top level directory in TagShow.
+
+Dependency Directory Structure
+--
+
+If all the dependencies are confusing, here is an abridged version of what
+a TagShow directory with the rendering and Illustration2Vec dependencies in 
+it might look like:
+```
+tagshow
+├── common
+│   ├── ...
+│   └── named_logger.py
+├── create_slideshow.py
+├── fetch_illustrations.py
+├── i2v
+│   ├── ...
+│   └── chainer_i2v.py
+├── illustrations
+│   ├── ...
+│   └── index.py
+├── readme.md
+├── rendering
+│   ├── ...
+│   └── slideshow.py
+├── rendering_resources
+│   ├── galleria-1.5.7
+│   │   ├── ...
+│   │   ├── package.json
+│   │   └── src
+│   │       ├── galleria.js
+│   │       ├── ...
+│   ├── jquery-3.4.1.min.js
+│   └── slideshow_template.html
+├── requirements.txt
+├── slideshow_example_1.txt
+├── slideshow_example_2.txt
+├── tag_illustrations.py
+└── taggers
+    ├── ...
+    └── i2v_tagger.py
+
+```
+
+Note that the exact versions of jQuery and Galleria are not important; TagShow
+will look for their name as a substring. 
