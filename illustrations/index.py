@@ -4,7 +4,6 @@ import os
 import yaql
 
 from . import illustration_file
-logging.basicConfig(level=logging.INFO, format='[%(asctime)s] %(levelname)s: %(message)s', datefmt='%I:%M:%H')
 
 
 class Index:

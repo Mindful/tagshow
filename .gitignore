@@ -8,3 +8,8 @@ index_data.pickle
 .DS_Store
 rendering_resources/galleria*
 rendering_resources/jquery*
+*illustration2vec*
+i2v/*
+*.json*
+*.prototxt
+*.caffemodel
